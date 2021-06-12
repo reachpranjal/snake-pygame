@@ -45,7 +45,7 @@ def center_text(text, color):
     text_rect = screenText.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
     gameWindow.blit(screenText, text_rect)
 
-def plotSnake(gameWindow, color, body, SSize):
+def drawSnake(gameWindow, color, body, SSize):
     for x, y in body:
         # pygame.draw.rect(gameWindow, color, [
         #     x, y, SSize, SSize])
@@ -53,7 +53,7 @@ def plotSnake(gameWindow, color, body, SSize):
             x, y], 10)
 
 
-def welcome():
+def intro():
     EXIT = False
     if(not os.path.exists("highscore.txt")):
         with open("highscore.txt", "w") as file:
@@ -63,7 +63,6 @@ def welcome():
         highscore = file.read()
 
     while not EXIT:
-        gameWindow.fill(black)
         gameWindow.blit(bgimg, (0, 0))
         gameWindow.blit(bgimg1, (220, 100))
         print_text("Py-Snake Game", grey, 200, 310)
@@ -102,7 +101,6 @@ def game_loop():
     score = 0
     body = []
 
-    # Create file if doesn't exists & append 0
     if(not os.path.exists("highscore.txt")):
         with open("highscore.txt", "w") as file:
             file.write("0")
@@ -128,9 +126,9 @@ def game_loop():
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        welcome()
+                        intro()
 
-        else:
+        else:           
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     EXIT = True
@@ -157,19 +155,15 @@ def game_loop():
 
             if abs(pose_x - target_x) < 15 and abs(pose_y - target_y) < 15:
                 score += 10
-                if score > int(highscore):
-                    highscore = score
+                if score > int(highscore): highscore = score
                 target_x = random.randint(20, SCREEN_WIDTH//2)
                 target_y = random.randint(20, SCREEN_HEIGHT//2)
                 SLength += 2
-                if score > 150:
-                    vel = vel * 1.03
-                else:
-                    vel = vel * 1.01
+
+                vel = vel*1.03 if score>150 else vel*1.01
                 pygame.mixer.music.load('scoreup.wav')
                 pygame.mixer.music.play()
 
-            gameWindow.fill(black)
             gameWindow.blit(bgimg, (0, 0))
             # pygame.draw.rect(gameWindow, red, [
             #     target_x, target_y, FSize, FSize])
@@ -201,7 +195,7 @@ def game_loop():
             print_text("Current High Score: " +
                        str(highscore), grey, 300, 5)
 
-            plotSnake(gameWindow, green, body, SSize)
+            drawSnake(gameWindow, green, body, SSize)
 
         pygame.display.update()
         clock.tick(FPS)
@@ -209,5 +203,5 @@ def game_loop():
     pygame.quit()
     quit()
 
-
-welcome()
+if __name__ == '__main__':
+	intro()
